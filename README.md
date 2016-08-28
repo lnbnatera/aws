@@ -3,22 +3,22 @@
 How to setup AWS account <br />
 1. Create an IAM user that can manage IAM accounts <br />
 2. Generate access keys for IAM administrator and configure CLI <br />
-```
-    $ aws --profile <iamadm_account> configure
-```
+        ```
+        $ aws --profile <iamadm_account> configure
+        ```
 3. Create a read-only IAM user <br />
-```
-    $ aws --profile <iamadm_account> iam create-user --user-name <ro_account>
-    {
-        "User": {
-            "UserName": "<ro_account>",
-            "Path": "/",
-            "CreateDate": "<>",
-            "UserId": "<>",
-            "Arn": "arn:aws:iam::<account_id>:user/ro_account"
-        }
-    }
-```
+        ```
+            $ aws --profile <iamadm_account> iam create-user --user-name <ro_account>
+            {
+                "User": {
+                    "UserName": "<ro_account>",
+                    "Path": "/",
+                    "CreateDate": "<>",
+                    "UserId": "<>",
+                    "Arn": "arn:aws:iam::<account_id>:user/ro_account"
+                }
+            }
+            ```
 4. Create an IAM read-only policy document for EC2 and IAM <br />
   1. List policy document for AmazonEC2ReadOnlyAccess and IAMReadOnlyAccess <br />
 ```
