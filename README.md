@@ -18,7 +18,7 @@ $ aws --profile <iamadm_account> configure
             "Arn": "arn:aws:iam::<account_id>:user/ro_account"
         }
     }
-    ```
+```
 - Create an IAM read-only policy document for EC2 and IAM by generating the policy documents for each and creating a new json file that contains both
 ```
   $ aws --profile usermgmt iam get-policy-version --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess --version-id v1 > AmazonEC2ReadOnlyAccess.json
