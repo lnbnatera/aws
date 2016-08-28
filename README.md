@@ -28,6 +28,7 @@ $ git push origin --delete <branch_name>          # Delete remote branch
 $ git status
 ```
 - Add new files/directories
+```
 $ git add <file|directory>
 ```
 - Commit changes
@@ -50,7 +51,7 @@ $ git help -a            # Show syntax guide for git and list subcommands
 $ git help <subcommand>  # Show man page of git subcommand
 ```
 ### Add a remote repository
-- Add a remote repository under the name <repo_name>
+- Add a remote repository under the name `<repo_name>`
 ```
 $ git remote
 origin
