@@ -18,8 +18,8 @@ $ git checkout <branch_name>
 ```
 - Delete branch
 ```
-$ git branch -d <branch_name>
-$ git branch -D <branch_name>  # Force delete a branch
+$ git branch <-d|--delete> <branch_name>
+$ git branch <-D|--delete --force> <branch_name>  # Force delete a branch
 ```
 - Check state of branch against remote
 ```
@@ -35,6 +35,12 @@ $ git commit -a
 - Push changes to remote repository
 ```
 $ git push origin <branch_name>
+```
+- Display branches
+```
+$ git branch                 # Display local branches only
+$ git branch <-r|--remotes>  # Display remote tracking branches only
+$ git branch <-a|--all>      # Display both remote tracking and local branches
 ```
 - Get help
 ```
