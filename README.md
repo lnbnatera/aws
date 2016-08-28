@@ -50,7 +50,7 @@ $ git help -a            # Show syntax guide for git and list subcommands
 $ git help <subcommand>  # Show man page of git subcommand
 ```
 ### Add a remote repository
-Useful when you need to pick files/directories located in a different repository <br />
+- Add a remote repository under the name `<repo_name>`
 ```
 $ git remote
 origin
@@ -65,8 +65,12 @@ origin/master
 origin/<branch_1>
 origin/<branch_2>
 origin/<branch_#>
-staging/master
-staging/<branch_1>
-staging/<branch_2>
-staging/<branch_#>
+<repo_name>/master
+<repo_name>/<branch_1>
+<repo_name>/<branch_2>
+<repo_name>/<branch_#>
+```
+- Pull contents of remote branch to local branch
+```
+$ git pull <repo_name> <branch_name>
 ```
