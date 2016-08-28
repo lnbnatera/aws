@@ -112,7 +112,9 @@ $ aws --profile <iamadm_account> configure
       }
   ]
   $ aws iam create-user --user-name <account3>
+
   An error occurred (AccessDenied) when calling the CreateUser operation: User: arn:aws:iam::<account_id>:user/<ro_account> is not authorized to perform: iam:CreateUser on resource: arn:aws:iam::<account_id>:user/<account3>
+
   $ aws ec2 describe-security-groups --query "SecurityGroups[*].{Group_Name:GroupName,Group_ID:GroupId}"
   [
       {
@@ -122,5 +124,5 @@ $ aws --profile <iamadm_account> configure
   ]
   $ aws ec2 create-security-group --group-name <group2> --description "test group"
 
-  $ An error occurred (UnauthorizedOperation) when calling the CreateSecurityGroup operation: You are not authorized to perform this operation.
+  An error occurred (UnauthorizedOperation) when calling the CreateSecurityGroup operation: You are not authorized to perform this operation.
 ```
