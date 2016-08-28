@@ -7,7 +7,8 @@
 | iam       | All AWS IAM related information |
 | ec2       | All AWS EC2 related information |
 
-### git cheatsheet
+## git cheatsheet
+### Basics
 - Create branch
 ```
 $ git branch <branch_name>
@@ -20,6 +21,7 @@ $ git checkout <branch_name>
 ```
 $ git branch <-d|--delete> <branch_name>
 $ git branch <-D|--delete --force> <branch_name>  # Force delete a branch
+$ git push origin --delete <branch_name>          # Delete remote branch
 ```
 - Check state of branch against remote
 ```
@@ -46,4 +48,25 @@ $ git branch <-a|--all>      # Display both remote tracking and local branches
 ```
 $ git help -a            # Show syntax guide for git and list subcommands
 $ git help <subcommand>  # Show man page of git subcommand
+```
+### Add a remote repository
+Useful when you need to pick files/directories located in a different repository <br />
+```
+$ git remote
+origin
+$ git remote add <repo_name> <url>
+$ git remote
+origin
+<repo_name>
+$ git fetch <repo_name>
+$ git branch -r
+origin/HEAD -> origin/master
+origin/master
+origin/<branch_1>
+origin/<branch_2>
+origin/<branch_#>
+staging/master
+staging/<branch_1>
+staging/<branch_2>
+staging/<branch_#>
 ```
