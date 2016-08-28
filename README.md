@@ -1,70 +1,66 @@
 # aws
 
 How to setup AWS account <br />
-1. Create an IAM user that can manage IAM accounts <br />
-2. Generate access keys for IAM administrator and configure CLI <br />
-        ```
-        $ aws --profile <iamadm_account> configure
-        ```
-3. Create a read-only IAM user <br />
-        ```
-            $ aws --profile <iamadm_account> iam create-user --user-name <ro_account>
-            {
-                "User": {
-                    "UserName": "<ro_account>",
-                    "Path": "/",
-                    "CreateDate": "<>",
-                    "UserId": "<>",
-                    "Arn": "arn:aws:iam::<account_id>:user/ro_account"
-                }
-            }
-            ```
-4. Create an IAM read-only policy document for EC2 and IAM <br />
-  1. List policy document for AmazonEC2ReadOnlyAccess and IAMReadOnlyAccess <br />
+- Create an IAM user that can manage IAM accounts
+- Generate access keys for IAM administrator and configure CLI
 ```
-      $ aws --profile usermgmt iam get-policy-version --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess --version-id v1 > AmazonEC2ReadOnlyAccess.json <br />
-      $ aws --profile usermgmt iam get-policy-version --policy-arn arn:aws:iam::aws:policy/IAMReadOnlyAccess --version-id v1 > IAMReadOnlyAccess.json <br />
+$ aws --profile <iamadm_account> configure
 ```
-  2. Create a new policy document, ropolicy.json, based on the previously generated policies <br />
+- Create a read-only IAM user
 ```
-      $ cat ropolicy.json <br />
-      { <br />
-         "Version": "2012-10-17", <br />
-         "Statement": [ <br />
-            { <br />
-               "Action": [ <br />
-                  "iam:List*", <br />
-                  "iam:Get*" <br />
-               ], <br />
-               "Resource": "*", <br />
-               "Effect": "Allow" <br />
-            }, <br />
-            { <br />
-               "Action": "ec2:Describe*", <br />
-               "Resource": "*", <br />
-               "Effect": "Allow" <br />
-            }, <br />
-            { <br />
-               "Action": "elasticloadbalancing:Describe*", <br />
-               "Resource": "*", <br />
-               "Effect": "Allow" <br />
-            }, <br />
-            { <br />
-               "Action": [ <br />
-                  "cloudwatch:ListMetrics", <br />
-                  "cloudwatch:GetMetricStatistics", <br />
-                  "cloudwatch:Describe*" <br />
-               ], <br />
-               "Resource": "*", <br />
-               "Effect": "Allow" <br />
-            }, <br />
-            { <br />
-               "Action": "autoscaling:Describe*", <br />
-               "Resource": "*", <br />
-               "Effect": "Allow" <br />
-            } <br />
-         ] <br />
-      } <br />
+    $ aws --profile <iamadm_account> iam create-user --user-name <ro_account>
+    {
+        "User": {
+            "UserName": "<ro_account>",
+            "Path": "/",
+            "CreateDate": "<>",
+            "UserId": "<>",
+            "Arn": "arn:aws:iam::<account_id>:user/ro_account"
+        }
+    }
+    ```
+- Create an IAM read-only policy document for EC2 and IAM <br />
+```
+  $ aws --profile usermgmt iam get-policy-version --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess --version-id v1 > AmazonEC2ReadOnlyAccess.json
+  $ aws --profile usermgmt iam get-policy-version --policy-arn arn:aws:iam::aws:policy/IAMReadOnlyAccess --version-id v1 > IAMReadOnlyAccess.json <br />
+  $ cat ropolicy.json <br />
+  { <br />
+     "Version": "2012-10-17", <br />
+     "Statement": [ <br />
+        { <br />
+           "Action": [ <br />
+              "iam:List*", <br />
+              "iam:Get*" <br />
+           ], <br />
+           "Resource": "*", <br />
+           "Effect": "Allow" <br />
+        }, <br />
+        { <br />
+           "Action": "ec2:Describe*", <br />
+           "Resource": "*", <br />
+           "Effect": "Allow" <br />
+        }, <br />
+        { <br />
+           "Action": "elasticloadbalancing:Describe*", <br />
+           "Resource": "*", <br />
+           "Effect": "Allow" <br />
+        }, <br />
+        { <br />
+           "Action": [ <br />
+              "cloudwatch:ListMetrics", <br />
+              "cloudwatch:GetMetricStatistics", <br />
+              "cloudwatch:Describe*" <br />
+           ], <br />
+           "Resource": "*", <br />
+           "Effect": "Allow" <br />
+        }, <br />
+        { <br />
+           "Action": "autoscaling:Describe*", <br />
+           "Resource": "*", <br />
+           "Effect": "Allow" <br />
+        } <br />
+     ] <br />
+  } <br />
 ```
 5. Create custom policy <br />
     $ aws --profile usermgmt iam create-policy --policy-name MyReadOnlyPolicy --policy-document file://<path>MyReadOnlyPolicy.json <br />
