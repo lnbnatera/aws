@@ -1,29 +1,33 @@
 # aws
 
 How to setup AWS account <br />
-The instructions below assume that a secure AWS account is active <br />
-1 - Create an IAM user in the Web Console that can manage IAM users <br />
-    ie username: usermgmt <br />
-       policy:   IAMFullAccess <br />
-2 - Generate access keys for IAM administrator and configure CLI <br />
-    $ aws --profile usermgmt configure <br />
-3 - Create a read-only IAM user <br />
-    $ aws --profile usermgmt iam create-user --user-name rouser <br />
-    { <br />
-        "User": { <br />
-            "UserName": "rouser", <br />
-            "Path": "/", <br />
-            "CreateDate": "<>", <br />
-            "UserId": "<>", <br />
-            "Arn": "arn:aws:iam::<account_id>:user/rouser" <br />
-        } <br />
-    } <br />
-4 - Create an IAM read-only policy document for EC2 and IAM <br />
-  a - List policy document for AmazonEC2ReadOnlyAccess and IAMReadOnlyAccess <br />
+1. Create an IAM user that can manage IAM accounts <br />
+2. Generate access keys for IAM administrator and configure CLI <br />
+```
+    $ aws --profile <iamadm_account> configure
+```
+3. Create a read-only IAM user <br />
+```
+    $ aws --profile <iamadm_account> iam create-user --user-name <ro_account>
+    {
+        "User": {
+            "UserName": "<ro_account>",
+            "Path": "/",
+            "CreateDate": "<>",
+            "UserId": "<>",
+            "Arn": "arn:aws:iam::<account_id>:user/ro_account"
+        }
+    }
+```
+4. Create an IAM read-only policy document for EC2 and IAM <br />
+  1. List policy document for AmazonEC2ReadOnlyAccess and IAMReadOnlyAccess <br />
+```
       $ aws --profile usermgmt iam get-policy-version --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess --version-id v1 > AmazonEC2ReadOnlyAccess.json <br />
       $ aws --profile usermgmt iam get-policy-version --policy-arn arn:aws:iam::aws:policy/IAMReadOnlyAccess --version-id v1 > IAMReadOnlyAccess.json <br />
-  b - Create a new policy document, ropolicy.json, based on the previously generated policies <br />
-      $ cat MyReadOnlyPolicy.json <br />
+```
+  2. Create a new policy document, ropolicy.json, based on the previously generated policies <br />
+```
+      $ cat ropolicy.json <br />
       { <br />
          "Version": "2012-10-17", <br />
          "Statement": [ <br />
@@ -61,7 +65,8 @@ The instructions below assume that a secure AWS account is active <br />
             } <br />
          ] <br />
       } <br />
-5 - Create custom policy <br />
+```
+5. Create custom policy <br />
     $ aws --profile usermgmt iam create-policy --policy-name MyReadOnlyPolicy --policy-document file://<path>MyReadOnlyPolicy.json <br />
     { <br />
         "Policy": { <br />
