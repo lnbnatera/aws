@@ -21,8 +21,8 @@ $ aws --profile <iamadm_account> configure
 ```
 - Create an IAM read-only policy document for EC2 and IAM by generating the policy documents for each and creating a new json file that contains both
 ```
-  $ aws --profile usermgmt iam get-policy-version --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess --version-id v1 > AmazonEC2ReadOnlyAccess.json
-  $ aws --profile usermgmt iam get-policy-version --policy-arn arn:aws:iam::aws:policy/IAMReadOnlyAccess --version-id v1 > IAMReadOnlyAccess.json
+  $ aws --profile <iamadm_account> iam get-policy-version --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess --version-id v1 > AmazonEC2ReadOnlyAccess.json
+  $ aws --profile <iamadm_account> iam get-policy-version --policy-arn arn:aws:iam::aws:policy/IAMReadOnlyAccess --version-id v1 > IAMReadOnlyAccess.json
   $ cat ropolicy.json
   {
      "Version": "2012-10-17",
@@ -64,43 +64,63 @@ $ aws --profile <iamadm_account> configure
 ```
 - Create custom policy
 ```
-  $ aws --profile usermgmt iam create-policy --policy-name MyReadOnlyPolicy --policy-document file://<path>MyReadOnlyPolicy.json
+  $ aws --profile <iamadm_account> iam create-policy --policy-name RoPolicy --policy-document file://<path>ropolicy.json
   {
       "Policy": {
-          "PolicyName": "MyReadOnlyPolicy",
+          "PolicyName": "RoPolicy",
           "CreateDate": "<>",
           "AttachmentCount": 0,
           "IsAttachable": true,
           "PolicyId": "<>",
           "DefaultVersionId": "v1",
           "Path": "/",
-          "Arn": "arn:aws:iam::<account_id>:policy/MyReadOnlyPolicy",
+          "Arn": "arn:aws:iam::<account_id>:policy/RoPolicy",
           "UpdateDate": "<>"
       }
   }
 ```
-- Attach policy to rouser
+- Attach policy to <ro_account>
 ```
-  $ aws --profile usermgmt attach-user-policy --user-name rouser --policy-arn arn:aws:iam::<account_id>:policy/MyReadOnlyPolicy
+  $ aws --profile <iamadm_account> attach-user-policy --user-name <ro_account> --policy-arn arn:aws:iam::<account_id>:policy/RoPolicy
 ```
 - Set read-only account as default CLI user
 ```
-  $ aws --profile usermgmt create-access-key --user-name rouser 
+  $ aws --profile <iamadm_account> create-access-key --user-name <ro_account> 
   {
       "AccessKey": {
-          "UserName": "rouser",
+          "UserName": "<ro_account>",
           "Status": "Active",
           "CreateDate": "<>",
           "SecretAccessKey": "<>",
           "AccessKeyId": "<>"
       }
   }
-    $ aws configure
+  $ aws configure
 ```
 - Test
 ```
-  $ aws iam list-users
-  <should list all IAM users>
-  $ aws iam create-user someuser
-  <error>
+  $ aws iam list-users --query "Users[*].{UserName:UserName}"
+  [
+      {
+          "UserName": "<account1>"
+      },
+      {
+          "UserName": "<account2>"
+      },
+      {
+          "UserName": "<ro_account>"
+      }
+  ]
+  $ aws iam create-user --user-name <account3>
+  An error occurred (AccessDenied) when calling the CreateUser operation: User: arn:aws:iam::<account_id>:user/<ro_account> is not authorized to perform: iam:CreateUser on resource: arn:aws:iam::<account_id>:user/<account3>
+  $ aws ec2 describe-security-groups --query "SecurityGroups[*].{Group_Name:GroupName,Group_ID:GroupId}"
+  [
+      {
+          "Group_ID": "sg-be18bcda",
+          "Group_Name": "default"
+      }
+  ]
+  $ aws ec2 create-security-group --group-name <group2> --description "test group"
+
+  $ An error occurred (UnauthorizedOperation) when calling the CreateSecurityGroup operation: You are not authorized to perform this operation.
 ```
