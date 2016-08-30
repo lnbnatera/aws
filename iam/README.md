@@ -36,6 +36,17 @@ Policy(ies) attached to group(s) where a user belongs to has the same effect pol
     <ec2_admin_group>
 
 ```
+##Delete an attached user policy
+- Since an admin group with full access to EC2 and CloudWatch has been created, delete the attached user policy from EC2 admin user
+```
+   $ aws iam list-attached-user-policies --user-name <ec2adm_account> --query "AttachedPolicies[*].PolicyArn" --output text
+   arn:aws:iam::aws:policy/AmazonEC2FullAccess
+   $ aws --profile <iamadm_account> iam detach-user-policy \
+   > --user-name <ec2adm_account> \
+   > --policy-arn `aws iam list-attached-user-policies --user-name <ec2adm_account> --query "AttachedPolicies[*].PolicyArn" --output text`
+   $ aws iam list-attached-user-policies --user-name <ec2adm_account> --query "AttachedPolicies[*].PolicyArn" --output text
+   $
+```
 ##Setup an IAM read-only account
 The procedures outlined below discuss how to create a custom policy and attach it to a user <br />
 - Create an IAM user that can manage IAM accounts
