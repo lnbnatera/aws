@@ -1,6 +1,24 @@
-# aws
+# AWS IAM
+The instructions here assume that an IAM administrator has been created in the AWS console with full access priviledge with keys setup on CLI. <br />
+##Manage permissions using policy(ies) attached to group(s) and/or user(s)
+Policy(ies) attached to group(s) where a user belongs to has the same effect policy(ies) directly attached to user(s) with the later being more specific (ie user-based)
+- Create an IAM group that has full access to EC2 and CloudWatch
+```
+    $ aws --profile <iamadm_account> iam create-group --group-name <ec2_admin_group>
+    {
+        "Group": {
+            "Path": "/",
+            "CreateDate": "<>",
+            "GroupId": "<>",
+            "Arn": "arn:aws:iam::329812010232:group/<ec2_admin_group>",
+            "GroupName": "<ec2_admin_group"
+         }
+    }
+    $
 
-How to setup AWS account <br />
+```
+##Setup an IAM read-only account
+The procedures outlined below discuss how to create a custom policy and attach it to a user <br />
 - Create an IAM user that can manage IAM accounts
 - Generate access keys for IAM administrator and configure CLI
 ```

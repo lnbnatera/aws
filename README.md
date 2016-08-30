@@ -1,12 +1,10 @@
 # AWS
-
 ## Directory Structure
 
 | Directory | Contents                        |
 |-----------|---------------------------------|
 | iam       | All AWS IAM related information |
 | ec2       | All AWS EC2 related information |
-
 ## git cheatsheet
 ### Basics
 - Create branch
@@ -49,6 +47,11 @@ $ git branch <-a|--all>      # Display both remote tracking and local branches
 ```
 $ git help -a            # Show syntax guide for git and list subcommands
 $ git help <subcommand>  # Show man page of git subcommand
+```
+### Undo
+- Restore uncommitted deleted files/directories
+```
+$ git checkout HEAD <file/directory>
 ```
 ### Add a remote repository
 - Add a remote repository under the name `<repo_name>`
