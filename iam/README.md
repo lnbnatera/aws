@@ -11,10 +11,29 @@ Policy(ies) attached to group(s) where a user belongs to has the same effect pol
             "CreateDate": "<>",
             "GroupId": "<>",
             "Arn": "arn:aws:iam::329812010232:group/<ec2_admin_group>",
-            "GroupName": "<ec2_admin_group"
+            "GroupName": "<ec2_admin_group>"
          }
     }
-    $
+    $ aws iam list-policies --query "Policies[?PolicyName=='AmazonEC2FullAccess'||PolicyName=='CloudWatchFullAccess'].Arn" --output text
+    arn:aws:iam::aws:policy/AmazonEC2FullAccess     arn:aws:iam::aws:policy/CloudWatchFullAccess
+    $ for ARN in `aws iam list-policies --query "Policies[?PolicyName=='AmazonEC2FullAccess"||PolicyName=='CloudWatchFullAccess'].Arn" --output text`
+    > do
+    > aws --profile <iamadm_account> iam attach-group-policy --group-name <ec2_admin_group> --policy-arn $ARN
+    > done
+    $ aws iam list-attched-group-policies --group-name <ec2_admin_group> --output table
+    ----------------------------------------------------------------------------
+    |                         ListAttachedGroupPolicies                        |
+    +--------------------------------------------------------------------------+
+    ||                            AttachedPolicies                            ||
+    |+-----------------------------------------------+------------------------+|
+    ||                   PolicyArn                   |      PolicyName        ||
+    |+-----------------------------------------------+------------------------+|
+    ||  arn:aws:iam::aws:policy/AmazonEC2FullAccess  |  AmazonEC2FullAccess   ||
+    ||  arn:aws:iam::aws:policy/CloudWatchFullAccess |  CloudWatchFullAccess  ||
+    |+-----------------------------------------------+------------------------+|
+    $ aws --profile <iamadm_account> iam add-user-to-group --group-name <ec2_admin_group> --user-name <ec2adm_account>
+    $ aws iam list-groups-for-user --user-name ec2-admin --query "Groups[*].{Group_Name:GroupName}" --output text
+    <ec2_admin_group>
 
 ```
 ##Setup an IAM read-only account
