@@ -17,6 +17,23 @@ aws ec2 describe-images \
 --query "sort_by(Images, &CreationDate)[-1].ImageId"
 ```
 
+Generate CloudFormation Mapping in partial YAML format for RedHat 6, RedHat 7, Amazon 1, and Amazon 2
+```
+for REGION in `aws ec2 describe-regions --query "Regions[].{Region:RegionName}"`
+do
+echo "Mappings:"
+echo "  AMIRegionMap:"
+echo "    $REGION:"
+echo -n "      amazon: "
+aws ec2 describe-images --filter 'Name=name,Values=amzn-ami-hvm-*' 'Name=root-device-type,Values=ebs' 'Name=virtualization-type,Values=hvm' 'Name=architecture,Values=x86_64' --query "sort_by(Images, &CreationDate)[-1].ImageId" --region $REGION
+echo -n "      amazon2: "
+aws ec2 describe-images --filter 'Name=name,Values=amzn2-ami-hvm-2.0*' 'Name=root-device-type,Values=ebs' 'Name=virtualization-type,Values=hvm' 'Name=architecture,Values=x86_64' --query "sort_by(Images, &CreationDate)[-1].ImageId" --region $REGION
+echo -n "      redhat6: "
+aws ec2 describe-images --filter 'Name=name,Values=RHEL-6*' 'Name=root-device-type,Values=ebs' 'Name=virtualization-type,Values=hvm' 'Name=architecture,Values=x86_64' --query "sort_by(Images, &CreationDate)[-1].ImageId" --region $REGION
+echo -n "      redhat7: "
+aws ec2 describe-images --filter 'Name=name,Values=RHEL-7*' 'Name=root-device-type,Values=ebs' 'Name=virtualization-type,Values=hvm' 'Name=architecture,Values=x86_64' --query "sort_by(Images, &CreationDate)[-1].ImageId" --region $REGION
+```
+
 Show KeyPair Names
 ```
 aws ec2 describe-key-pairs --query "KeyPairs[].{KeyName:KeyName}"
