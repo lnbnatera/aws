@@ -1,128 +1,80 @@
-# aws
+Show latest AMI ID of named AMI
+```
+aws ec2 describe-images \
+--filter 'Name=name,Values=amzn2-ami-hvm-2.0*' \
+         'Name=virtualization-type,Values=hvm' \
+         'Name=root-device-type,Values=ebs' \
+         'Name=architecture,Values=x86_64'
+--query "sort_by(Images, &CreationDate)[-1].ImageId"
+```
+```
+aws ec2 describe-images \
+--filter 'Name=name,Values=RHEL-6*' \
+         'Name=virtualization-type,Values=hvm' \
+         'Name=root-device-type,Values=ebs' \
+         'Name=owner-id,Values=309956199498' \
+         'Name=architecture,Values=x86_64' \
+--query "sort_by(Images, &CreationDate)[-1].ImageId"
+```
 
-How to setup AWS account <br />
-- Create an IAM user that can manage IAM accounts
-- Generate access keys for IAM administrator and configure CLI
+Show KeyPair Names
 ```
-$ aws --profile <iamadm_account> configure
+aws ec2 describe-key-pairs --query "KeyPairs[].{KeyName:KeyName}"
 ```
-- Create a read-only IAM user
-```
-    $ aws --profile <iamadm_account> iam create-user --user-name <ro_account>
-    {
-        "User": {
-            "UserName": "<ro_account>",
-            "Path": "/",
-            "CreateDate": "<>",
-            "UserId": "<>",
-            "Arn": "arn:aws:iam::<account_id>:user/ro_account"
-        }
-    }
-```
-- Create an IAM read-only policy document for EC2 and IAM by generating the policy documents for each and creating a new json file that contains both
-```
-  $ aws --profile <iamadm_account> iam get-policy-version --policy-arn arn:aws:iam::aws:policy/AmazonEC2ReadOnlyAccess --version-id v1 > AmazonEC2ReadOnlyAccess.json
-  $ aws --profile <iamadm_account> iam get-policy-version --policy-arn arn:aws:iam::aws:policy/IAMReadOnlyAccess --version-id v1 > IAMReadOnlyAccess.json
-  $ cat ropolicy.json
-  {
-     "Version": "2012-10-17",
-     "Statement": [
-        {
-           "Action": [
-              "iam:List*",
-              "iam:Get*"
-           ],
-           "Resource": "*",
-           "Effect": "Allow"
-        },
-        {
-           "Action": "ec2:Describe*",
-           "Resource": "*",
-           "Effect": "Allow"
-        },
-        {
-           "Action": "elasticloadbalancing:Describe*",
-           "Resource": "*",
-           "Effect": "Allow"
-        },
-        {
-           "Action": [
-              "cloudwatch:ListMetrics",
-              "cloudwatch:GetMetricStatistics",
-              "cloudwatch:Describe*"
-           ],
-           "Resource": "*",
-           "Effect": "Allow"
-        },
-        {
-           "Action": "autoscaling:Describe*",
-           "Resource": "*",
-           "Effect": "Allow"
-        }
-     ]
-  }
-```
-- Create custom policy
-```
-  $ aws --profile <iamadm_account> iam create-policy --policy-name RoPolicy --policy-document file://<path>ropolicy.json
-  {
-      "Policy": {
-          "PolicyName": "RoPolicy",
-          "CreateDate": "<>",
-          "AttachmentCount": 0,
-          "IsAttachable": true,
-          "PolicyId": "<>",
-          "DefaultVersionId": "v1",
-          "Path": "/",
-          "Arn": "arn:aws:iam::<account_id>:policy/RoPolicy",
-          "UpdateDate": "<>"
-      }
-  }
-```
-- Attach policy to <ro_account>
-```
-  $ aws --profile <iamadm_account> attach-user-policy --user-name <ro_account> --policy-arn arn:aws:iam::<account_id>:policy/RoPolicy
-```
-- Set read-only account as default CLI user
-```
-  $ aws --profile <iamadm_account> create-access-key --user-name <ro_account> 
-  {
-      "AccessKey": {
-          "UserName": "<ro_account>",
-          "Status": "Active",
-          "CreateDate": "<>",
-          "SecretAccessKey": "<>",
-          "AccessKeyId": "<>"
-      }
-  }
-  $ aws configure
-```
-- Test
-```
-  $ aws iam list-users --query "Users[*].{UserName:UserName}"
-  [
-      {
-          "UserName": "<account1>"
-      },
-      {
-          "UserName": "<account2>"
-      },
-      {
-          "UserName": "<ro_account>"
-      }
-  ]
-  $ aws iam create-user --user-name <account3>
 
-  An error occurred (AccessDenied) when calling the CreateUser operation: User: arn:aws:iam::<account_id>:user/<ro_account> is not authorized to perform: iam:CreateUser on resource: arn:aws:iam::<account_id>:user/<account3>
+Show default VPC
+```
+aws ec2 describe-vpcs --filter "Name=isDefault,Values=true" --query "Vpcs[0].VpcId"
+```
 
-  $ aws ec2 describe-security-groups --query "SecurityGroups[*].{Group_Name:GroupName,Group_ID:GroupId}"
-  [
-      {
-          "Group_ID": "sg-be18bcda",
-          "Group_Name": "default"
-      }
-  ]
-  $ aws ec2 create-security-group --group-name <group2> --description "test group"
+Create Security Group
+```
+aws ec2 create-security-group --description <desription> --group-name <group_name> --vpc-id <vpc_id>
+```
 
-  An error occurred (UnauthorizedOperation) when calling the CreateSecurityGroup operation: You are not authorized to perform this operation.
+Grant SSH access in security group
+```
+aws ec2 authorize-security-group-ingress --group-name <group_name> --protocol tcp --port 22 --cidr <ip_address>
+```
+
+Run Vanilla ec2 instance
+```
+aws ec2 run-instances \
+--image-id ami-0de53d8956e8dcf80 \
+--key-name us-east-1-2019 \
+--security-groups ssh-only \
+--instance-type t2.micro \
+--query "Instances[0].InstanceId"
+```
+
+Wait for instance to have status OK
+```
+aws ec2 wait instance-status-ok --instance-ids <instance_id>
+```
+
+Filter out not equal to
+```
+aws ec2 describe-instances --query "Reservations[].Instances[?InstanceId != '<instanec_id>'].InstanceId"
+```
+
+Wait until instance is terminated
+```
+aws ec2 wait instance-terminated --instance-ids <instance_id>
+```
+
+Show Instance ID of instances in running state only
+```
+aws ec2 describe-instances \
+--query "Reservations[].Instances[].InstanceId" \
+--filters "Name=instance-state-name,Values=running"
+```
+
+Show Public IP of Instance ID
+```
+# 1
+aws ec2 describe-instances \
+--instance-ids i-0a8db4b8290e0263a \
+--query "Reservations[].Instances[].NetworkInterfaces[].Association.PublicIp"
+# 2
+aws ec2 describe-instances --query "Reservations[0].Instances[0].PublicIpAddress"
 ```
