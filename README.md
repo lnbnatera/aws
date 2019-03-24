@@ -19,10 +19,10 @@ aws ec2 describe-images \
 
 Generate CloudFormation Mapping in partial YAML format for RedHat 6, RedHat 7, Amazon 1, and Amazon 2
 ```
-for REGION in `aws ec2 describe-regions --query "Regions[].{Region:RegionName}"`
-do
 echo "Mappings:"
 echo "  AMIRegionMap:"
+for REGION in `aws ec2 describe-regions --query "Regions[].{Region:RegionName}"`
+do
 echo "    $REGION:"
 echo -n "      amazon: "
 aws ec2 describe-images --filter 'Name=name,Values=amzn-ami-hvm-*' 'Name=root-device-type,Values=ebs' 'Name=virtualization-type,Values=hvm' 'Name=architecture,Values=x86_64' --query "sort_by(Images, &CreationDate)[-1].ImageId" --region $REGION
@@ -32,6 +32,7 @@ echo -n "      redhat6: "
 aws ec2 describe-images --filter 'Name=name,Values=RHEL-6*' 'Name=root-device-type,Values=ebs' 'Name=virtualization-type,Values=hvm' 'Name=architecture,Values=x86_64' --query "sort_by(Images, &CreationDate)[-1].ImageId" --region $REGION
 echo -n "      redhat7: "
 aws ec2 describe-images --filter 'Name=name,Values=RHEL-7*' 'Name=root-device-type,Values=ebs' 'Name=virtualization-type,Values=hvm' 'Name=architecture,Values=x86_64' --query "sort_by(Images, &CreationDate)[-1].ImageId" --region $REGION
+done
 ```
 
 Show KeyPair Names
