@@ -96,3 +96,8 @@ aws ec2 describe-instances \
 # 2
 aws ec2 describe-instances --query "Reservations[0].Instances[0].PublicIpAddress"
 ```
+
+Show cloudformation outputs according to name
+```
+aws cloudformation describe-stacks --stack-name s3lambdatrigger --query "Stacks[].Outputs[?OutputKey=='mylambdaarn'].OutputValue"
+```
